@@ -85,12 +85,10 @@ struct Stat {
 	condition_variable *statCond;
 	SafeCount * requestersAlive;
 	string name;
-  int n;
-	Stat(Requester * requester, SafeCount * requestersAlive, Histogram * hist, int n) {
+	Stat(Requester * requester, SafeCount * requestersAlive, Histogram * hist) {
 		this->name = requester->name;
 		this->buff = new SafeBuffer();
 		this->requestersAlive = requestersAlive;
-    this->n = n;
 		this->hist = hist;
 		this->statCond = new condition_variable();
 	}
@@ -131,7 +129,7 @@ void* stat_thread_function(void* arg) {
 	cout << "Hi, I am a stat " << currStat.name << endl;
 	unique_lock<mutex> condLock(statLock);
 	while ( currStat.buff->size() > 0 || currStat.requestersAlive->get() > 0 ) {
-    while ( currStat.buff->size() == 0  && currStat.requestersAlive->get() > 0 ) {
+    while ( currStat.buff->size() == 0 ) {
       currStat.statCond->wait(condLock);
     }
     string statString = currStat.buff->pop();
@@ -141,7 +139,7 @@ void* stat_thread_function(void* arg) {
     string response = statString.substr(0, pos);
     // cout << " stat : " << request << " " << response << endl;
     currStat.hist->update(request, response);
-    // usleep(500);
+    usleep(500);
 	}
 
 	return 0;
@@ -303,6 +301,7 @@ int main(int argc, char * argv[]) {
 					RequestChannel * newChannel = new RequestChannel(newChannelName, RequestChannel::CLIENT_SIDE);
           mostRecent = newChannel->read_fd();
           allChannels.push_back(newChannel);
+	  usleep(7000);
           //FD_SET(mostRecent, &readfds);
           // workers.push_back( Worker(&request_buffer, workerChannel, &hist, i, &requestSizeCond, &requestersAlive, &workerWaitCond, &workerLock, &workersAlive, &stats) );
 					// pthread_create(&workerThreads[i], NULL, worker_thread_function, (void*) &workers[i]);
