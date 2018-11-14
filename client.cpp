@@ -281,9 +281,9 @@ int main(int argc, char * argv[]) {
 				pthread_create(&requestThreads[1], NULL, request_thread_function, (void*) &requesters[1]);
 				pthread_create(&requestThreads[2], NULL, request_thread_function, (void*) &requesters[2]);
 
-				stats.push_back( Stat(&requesters[0], &requestersAlive, &hist, requestCount) );
-				stats.push_back( Stat(&requesters[1], &requestersAlive, &hist, requestCount) );
-				stats.push_back( Stat(&requesters[2], &requestersAlive, &hist, requestCount) );
+				stats.push_back( Stat(&requesters[0], &requestersAlive, &hist) );
+				stats.push_back( Stat(&requesters[1], &requestersAlive, &hist) );
+				stats.push_back( Stat(&requesters[2], &requestersAlive, &hist) );
 
 				pthread_create(&statThreads[0], NULL, stat_thread_function, (void*) &stats[0]);
 				pthread_create(&statThreads[1], NULL, stat_thread_function, (void*) &stats[1]);
