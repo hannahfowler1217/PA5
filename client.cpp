@@ -222,6 +222,7 @@ void* worker_thread_function(void* arg) {
 /*--------------------------------------------------------------------------*/
 
 int main(int argc, char * argv[]) {
+    struct timeval begin, end; 
     int requestCount = 100; //default number of requests per "patient"
     int workerCount = 1; //default number of worker threads
 		int requestLimit = 10;
@@ -293,7 +294,7 @@ int main(int argc, char * argv[]) {
 				// pthread_join(requestThreads[0], NULL);
 				// pthread_join(requestThreads[1], NULL);
 				// pthread_join(requestThreads[2], NULL);
-
+	gettimeofday(&begin, NULL); 
         FD_ZERO(&readfds);
         int mostRecent = 0;
         for(int i = 0; i < workerCount; i++) {
@@ -364,7 +365,10 @@ int main(int argc, char * argv[]) {
 				pthread_join(statThreads[0], NULL);
 				pthread_join(statThreads[1], NULL);
 				pthread_join(statThreads[2], NULL);
-
+	gettimeofday(&end, NULL); 
+	unsigned int timeSeconds = end.tv_sec - begin.tv_sec;
+	unsigned int timeMicro = end.tv_usec - begin.tv_usec;
+	cout << "Program took " << timeSeconds << " sec and " << timeMicro << " usec." << endl; 
 
 
         cout << "done." << endl;
