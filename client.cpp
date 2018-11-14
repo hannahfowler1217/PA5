@@ -126,6 +126,7 @@ struct Worker {
 void* stat_thread_function(void* arg) {
 	Stat currStat = *( (Stat*) arg);
 	mutex statLock;
+	int beforePrint = 0;
 	cout << "Hi, I am a stat " << currStat.name << endl;
 	unique_lock<mutex> condLock(statLock);
 	while ( currStat.buff->size() > 0 || currStat.requestersAlive->get() > 0 ) {
@@ -137,7 +138,8 @@ void* stat_thread_function(void* arg) {
     string request = statString.substr(0, pos);
     statString.erase(0, pos + 1);
     string response = statString.substr(0, pos);
-    // cout << " stat : " << request << " " << response << endl;
+    beforePrint++;
+    if ( beforePrint % 1000 == 0 ) { cout << " stat : " << request << " " << response << endl; }
     currStat.hist->update(request, response);
     usleep(500);
 	}
@@ -361,9 +363,9 @@ int main(int argc, char * argv[]) {
 				// }
 
 
-				pthread_join(statThreads[0], NULL);
-				pthread_join(statThreads[1], NULL);
-				pthread_join(statThreads[2], NULL);
+// 				pthread_join(statThreads[0], NULL);
+// 				pthread_join(statThreads[1], NULL);
+// 				pthread_join(statThreads[2], NULL);
 	gettimeofday(&end, NULL); 
 	unsigned int timeSeconds = end.tv_sec - begin.tv_sec;
 	unsigned int timeMicro = end.tv_usec - begin.tv_usec;
